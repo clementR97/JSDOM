@@ -186,13 +186,22 @@ boutonDecroissant.addEventListener("click",()=>{
              genererPage(piecesdecroisant);
 });
 
-const filtredescription = document.querySelector(".btn-filtrer-descrip");
- filtredescription.addEventListener("click",()=>{
-     const piecesFiltrees = pieces.filter((piece)=>{
-         return piece.description;
-     })
-     document.querySelector('.fiches').innerHTML = "";
-     genererPage(piecesFiltrees);
-});
+// const filtredescription = document.querySelector(".btn-filtrer-descrip");
+//  filtredescription.addEventListener("click",()=>{
+//      const piecesFiltrees = pieces.filter((piece)=>{
+//          return piece.description;
+//      })
+//      document.querySelector('.fiches').innerHTML = "";
+//      genererPage(piecesFiltrees);
+// });
 
-// controler 
+// controler les prix avec le input de scrol
+const scrolPrix = document.querySelector('#prix');
+
+scrolPrix.addEventListener('input',()=>{
+    const piecesFiltrees = pieces.filter((piece)=>{
+        return piece.prix <= scrolPrix.value;
+    });
+    document.querySelector('.fiches').innerHTML = "";
+    genererPage(piecesFiltrees);
+});
