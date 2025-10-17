@@ -1,207 +1,163 @@
-// // Récupération des pièces depuis le fichier JSON
-// const reponse = await fetch("pieces-autos.json");
-// const pieces = await reponse.json();
-// //const article = pieces[0];
-// for(const article of pieces){
-// const imageElement = document.createElement("img");
-// imageElement.src = article.image;
-
-// const nomElement = document.createElement("h2");
-// nomElement.innerText = article.nom;
-
-// const prixElement = document.createElement("p");
-// prixElement.innerText = `Prix:${article.prix} €, (${article.prix<35?"€":"€€€"}) `;
-
-// const categorieElement = document.createElement("p");
-// categorieElement.innerText = `${article.categorie??"(aucune catégorie)"}`;
-
-// const descriptionArticle = document.createElement("p");
-// descriptionArticle.innerText = `${article.description??"(aucune description)"}`;
-
-// const disponibiliter = document.createElement("p");
-// disponibiliter.innerText = `${article.disponibilite?"disponible":"non disponible"}`;
-
-// // creer une div 
-// const div = document.createElement("div")
-
-// const sectionFiches = document.querySelector(".fiches");
-
-// sectionFiches.appendChild(div);
-
-// div.appendChild(imageElement)
-// div.appendChild(nomElement)
-// div.appendChild(prixElement)
-// div.appendChild(categorieElement)
-// div.appendChild(descriptionArticle)
-// div.appendChild(disponibiliter)
-// }
-
-// const trier = document.querySelector(".btn-trier");
-// trier.addEventListener("click",function(){
-//     const piecesOrdonnees = Array.from(pieces);
-//     piecesOrdonnees.sort(function(a,b){
-//         return a.prix - b.prix;
-//     });
-//     console.log(piecesOrdonnees);
-// })
-
-// // const filtre = document.querySelector(".btn-filtrer");
-// // filtre.addEventListener("click",function(){
-
-// //     const piecesFilter = pieces.filtre(function(piece){
-// //         return piece.prix <= 35;
-// //     });
-
-// // });
-// const boutonFiltrer = document.querySelector(".btn-filtrer");
-
-// boutonFiltrer.addEventListener("click", function () {
-//    const piecesFiltrees = pieces.filter(function (piece) {
-//        return piece.prix <= 35;
-//    });
-//    console.log(piecesFiltrees)
-//  } );
-
-//  const triedecroisant = document.querySelector(".btn-trier-decroi");
-//  triedecroisant.addEventListener("click",()=>{
-
-//     const piecesdecroisant = pieces.sort((a,b)=>{
-//         return b.prix - a.prix;
-//     });
-//     console.log(piecesdecroisant);
-//  });
-
-//  const filtredescription = document.querySelector(".btn-filtrer-descrip");
-//  filtredescription.addEventListener("click",()=>{
-
-//     const piecesFiltrees = pieces.filter((piece)=>{
-//         return piece.description;
-//     })
-//     console.log(piecesFiltrees);
-//  });
+import{ajoutListenersAvis,ajoutListenerEnvoyerAvis} from './avis.js';
+let pieces = window.localStorage.getItem("pieces");
+if(pieces === null){
+    // Récupération des pièces depuis le fichier JSON
+    const reponse = await fetch('http://localhost:8081/pieces');
+    pieces = await reponse.json();
+    const valeurPieces = JSON.stringify(pieces);
+    window.localStorage.setItem("pieces",valeurPieces);
+}
+else{
+    pieces = JSON.parse(pieces);
+}
 
 
-//  const noms = pieces.map(piece => piece.nom);
-//  for(let i=pieces.length-1 ;i>=0 ;i--){
-//     if(pieces[i].prix > 35){
-//         noms.splice(i,1);
-//     }  
-//  }
-//  console.log(noms);
+ajoutListenerEnvoyerAvis();
+function genererPieces(pieces){
+    for (let i = 0; i < pieces.length; i++) {
 
-//  const nomDisponible = pieces.map(piece => piece.nom);
-//  const prixDisponible = pieces.map(piece => piece.prix);
-//  const disponiblePiece = pieces.map(piece=>piece.disponibilite);
-//  for(let i = pieces.length-1; i>=0;i--){
-//     if(disponiblePiece[i]== false){
-//         nomDisponible.splice(i,1);
-//         prixDisponible.splice(i,1);
+        const article = pieces[i];
+        // Récupération de l'élément du DOM qui accueillera les fiches
+        const sectionFiches = document.querySelector(".fiches");
+        // Création d’une balise dédiée à une pièce automobile
+        const pieceElement = document.createElement("article");
+        // Création des balises 
+        const imageElement = document.createElement("img");
+        imageElement.src = article.image;
+        const nomElement = document.createElement("h2");
+        nomElement.innerText = article.nom;
+        const prixElement = document.createElement("p");
+        prixElement.innerText = `Prix: ${article.prix} € (${article.prix < 35 ? "€" : "€€€"})`;
+        const categorieElement = document.createElement("p");
+        categorieElement.innerText = article.categorie ?? "(aucune catégorie)";
+        const descriptionElement = document.createElement("p");
+        descriptionElement.innerText = article.description ?? "Pas de description pour le moment.";
+        const stockElement = document.createElement("p");
+        stockElement.innerText = article.disponibilite ? "En stock" : "Rupture de stock";
+        //Code ajouté
+        const avisBouton = document.createElement("button");
+        avisBouton.dataset.id = article.id;
+        avisBouton.textContent = "Afficher les avis";
         
-//     }
-//  }
- 
-
-
-
-
-// const listeUl = document.createElement('ul');
-// const disponibleElements = document.createElement('ul');
-
-// for(let i=0; i< noms.length; i++){
-//     const listeLi = document.createElement('li');
-//     const listeElements = document.createElement('li');
-//     listeLi.innerText = `${noms[i]}`
-    
-//     listeElements.innerText = `${nomDisponible[i]} - ${prixDisponible[i].toFixed(2)}€`
-//     listeUl.appendChild(listeLi);
-//     disponibleElements.appendChild(listeElements);
-// }
-// document.querySelector('.abordable').appendChild(listeUl)
-// document.querySelector('.disponibles').appendChild(disponibleElements)
-// document.querySelector(".fiches").innerHTML = '';
-
-
-const pieces = await fetch("pieces-autos.json").then(pieces=>pieces.json());
-
-// generer tout la page web
-
-function genererPage(pieces){
-    for(let i=0;i<pieces.length;i++){
-        const pieceElement = document.createElement('article');
-        const ImageElement = document.createElement('img');
-        ImageElement.src = pieces[i].image;
-        pieceElement.appendChild(ImageElement);
-
-        const NomElement = document.createElement('h2');
-        NomElement.innerText = pieces[i].nom;
-        pieceElement.appendChild(NomElement);
-
-        const prixElement = document.createElement('p');
-        prixElement.innerText = pieces[i].prix.toFixed(2);
-        pieceElement.appendChild(prixElement);
-
-        const categorieElement = document.createElement('p');
-        categorieElement.innerText = pieces[i].categorie;
-        pieceElement.appendChild(categorieElement);
-        
-
-        const sectionFiches = document.querySelector('.fiches');
+        // On rattache la balise article a la section Fiches
         sectionFiches.appendChild(pieceElement);
-        document.body.appendChild(sectionFiches);
+        pieceElement.appendChild(imageElement);
+        pieceElement.appendChild(nomElement);
+        pieceElement.appendChild(prixElement);
+        pieceElement.appendChild(categorieElement);
+        pieceElement.appendChild(descriptionElement);
+        pieceElement.appendChild(stockElement);
+        //Code aJouté
+        pieceElement.appendChild(avisBouton);
+    
+     }
+     ajoutListenersAvis();
+}
+
+genererPieces(pieces);
+
+ //gestion des bouttons 
+const boutonTrier = document.querySelector(".btn-trier");
+
+boutonTrier.addEventListener("click", function () {
+    const piecesOrdonnees = Array.from(pieces);
+    piecesOrdonnees.sort(function (a, b) {
+        return a.prix - b.prix;
+     });
+     document.querySelector(".fiches").innerHTML = "";
+    genererPieces(piecesOrdonnees);
+});
+
+const boutonFiltrer = document.querySelector(".btn-filtrer");
+
+boutonFiltrer.addEventListener("click", function () {
+    const piecesFiltrees = pieces.filter(function (piece) {
+        return piece.prix <= 35;
+    });
+    document.querySelector(".fiches").innerHTML = "";
+    genererPieces(piecesFiltrees);
+});
+
+//Correction Exercice
+const boutonDecroissant = document.querySelector(".btn-decroissant");
+
+boutonDecroissant.addEventListener("click", function () {
+    const piecesOrdonnees = Array.from(pieces);
+    piecesOrdonnees.sort(function (a, b) {
+        return b.prix - a.prix;
+     });
+     document.querySelector(".fiches").innerHTML = "";
+    genererPieces(piecesOrdonnees);
+});
+
+const boutonNoDescription = document.querySelector(".btn-nodesc");
+
+boutonNoDescription.addEventListener("click", function () {
+    const piecesFiltrees = pieces.filter(function (piece) {
+        return piece.description
+    });
+    document.querySelector(".fiches").innerHTML = "";
+    genererPieces(piecesFiltrees);
+});
+
+const noms = pieces.map(piece => piece.nom);
+for(let i = pieces.length -1 ; i >= 0; i--){
+    if(pieces[i].prix > 35){
+        noms.splice(i,1);
     }
 }
-genererPage(pieces);
+console.log(noms)
+//Création de l'en-tête
 
+const pElement = document.createElement('p')
+pElement.innerText = "Pièces abordables";
+//Création de la liste
+const abordablesElements = document.createElement('ul');
+//Ajout de chaque nom à la liste
+for(let i=0; i < noms.length ; i++){
+    const nomElement = document.createElement('li');
+    nomElement.innerText = noms[i];
+    abordablesElements.appendChild(nomElement);
+}
+// Ajout de l'en-tête puis de la liste au bloc résultats filtres
+document.querySelector('.abordables')
+    .appendChild(pElement)
+    .appendChild(abordablesElements);
 
+//Code Exercice 
+const nomsDisponibles = pieces.map(piece => piece.nom)
+const prixDisponibles = pieces.map(piece => piece.prix)
 
+for(let i = pieces.length -1 ; i >= 0; i--){
+    if(pieces[i].disponibilite === false){
+        nomsDisponibles.splice(i,1);
+        prixDisponibles.splice(i,1);
+    }
+}
 
-const boutonTrier = document.querySelector(".btn-trier");
-boutonTrier.addEventListener("click",function(){
-    const piecesOrdonnees = Array.from(pieces);
-         piecesOrdonnees.sort(function(a,b){
-             return a.prix - b.prix;
-         });
-         
-          document.querySelector('.fiches').innerHTML = "";
-          genererPage(piecesOrdonnees);
-});
+const disponiblesElement = document.createElement('ul');
 
-const boutonFiltre = document.querySelector('.btn-filtrer');
-boutonFiltre.addEventListener("click",()=>{
-    const piecesFiltrer = pieces.filter((piece)=> {
-                return piece.prix <= 35;
-            });
-            
-            document.querySelector('.fiches').innerHTML = "";
-            genererPage(piecesFiltrer);
-          });
+for(let i=0 ; i < nomsDisponibles.length ; i++){
+    const nomElement = document.createElement('li');
+    nomElement.innerText = `${nomsDisponibles[i]} - ${prixDisponibles[i]} €`
+    disponiblesElement.appendChild(nomElement);
+}
 
+const pElementDisponible = document.createElement('p')
+pElementDisponible.innerText = "Pièces disponibles:";
+document.querySelector('.disponibles').appendChild(pElementDisponible).appendChild(disponiblesElement)
 
-const boutonDecroissant = document.querySelector('.btn-trier-decroi');
-boutonDecroissant.addEventListener("click",()=>{
-    const piecesdecroisant = pieces.sort((a,b)=>{
-                return b.prix - a.prix;
-             });
-             document.querySelector('.fiches').innerHTML = "";
-             genererPage(piecesdecroisant);
-});
-
-// const filtredescription = document.querySelector(".btn-filtrer-descrip");
-//  filtredescription.addEventListener("click",()=>{
-//      const piecesFiltrees = pieces.filter((piece)=>{
-//          return piece.description;
-//      })
-//      document.querySelector('.fiches').innerHTML = "";
-//      genererPage(piecesFiltrees);
-// });
-
-// controler les prix avec le input de scrol
-const scrolPrix = document.querySelector('#prix');
-
-scrolPrix.addEventListener('input',()=>{
-    const piecesFiltrees = pieces.filter((piece)=>{
-        return piece.prix <= scrolPrix.value;
+const inputPrixMax = document.querySelector('#prix-max')
+inputPrixMax.addEventListener('input', function(){
+    const piecesFiltrees = pieces.filter(function(piece){
+        return piece.prix <= inputPrixMax.value;
     });
-    document.querySelector('.fiches').innerHTML = "";
-    genererPage(piecesFiltrees);
+    document.querySelector(".fiches").innerHTML = "";
+    genererPieces(piecesFiltrees);  
 });
+
+const buttonMaj = document.querySelector(".btn-maj");
+buttonMaj = addEventListener("click",()=>{
+    window.localStorage.removeItem("pieces");
+
+})
