@@ -19,7 +19,11 @@
   "homepage": "https://github.com/OpenClassrooms-Student-Center/7697016-Front-End.1#readme",
   "dependencies": {
     "chart.js": "^4.5.1",
-    "eslint": "^9.39.0",
     "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.0",
+    "globals": "^16.5.0"
   }
 }
